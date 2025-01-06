@@ -1,0 +1,11 @@
+Developer: Facundo
+Website: https://facuperezm.com
+Twitter: @facuperezm
+Location: Argentina
+
+Last Updated: 2025-01-06
+Technology: HTML5, CSS3, JavaScript, Astro
+Standards: W3C, WCAG 2.1 Compliance
+
+
+Description: This site is a ruleta page designed for fun, learning, etc.

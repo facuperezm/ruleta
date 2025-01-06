@@ -5,7 +5,7 @@ import WheelSelector from './WheelSelector.astro';
 <div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
   <WinnerDisplay />
   
-  <div class="mb-6">
+  <div class="mb-4">
     <label class="block text-gray-700 text-sm font-bold mb-2" for="participant">
       Añadir Participante
     </label>
@@ -26,7 +26,7 @@ import WheelSelector from './WheelSelector.astro';
   </div>
 
   <div class="mb-6">
-    <h3 class="text-gray-700 text-sm font-bold mb-2">Participantes:</h3>
+    <h3 class="text-gray-700 text-sm font-bold mb-2">Participantes</h3>
     <ul id="participantsList" class="list-disc text-gray-600"></ul>
   </div>
 
@@ -113,7 +113,7 @@ import WheelSelector from './WheelSelector.astro';
         <li class="mb-2 flex justify-between items-center bg-gray-50 py-2 px-3 rounded-lg">
           <span>${name}</span>
           <button 
-            class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-100 text-red-500 hover:text-red-700 transition-colors duration-200" 
+            class="w-6 h-6 flex text-xl items-center justify-center rounded-full hover:bg-red-100 text-red-500 hover:text-red-700 transition-colors duration-200" 
             data-index="${index}"
             title="Eliminar participante"
           >
@@ -162,7 +162,7 @@ import WheelSelector from './WheelSelector.astro';
     // Reset rotation first
     gsap.set('#wheelCanvas', { rotation: 0 });
     
-    const minSpins = 8;
+    const minSpins = 10;
     const randomSpins = minSpins + Math.floor(Math.random() * 4);
     const randomDegrees = getRandomDegrees();
     const totalDegrees = (randomSpins * 360) + randomDegrees;

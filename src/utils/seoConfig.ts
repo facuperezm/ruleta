@@ -1,12 +1,12 @@
 export const seoConfig = {
   baseURL: "https://laruletita.vercel.app",
   description:
-    "La Ruleta Aleatoria Online ⚡️ Herramienta gratuita para tomar decisiones al azar. Perfecta para sorteos, juegos y elecciones aleatorias. Simple, rápida y sin registro.",
+    "La Ruleta Online ⚡️ Herramienta gratuita para tomar decisiones al azar. Perfecta para sorteos y elecciones aleatorias.",
   type: "website",
   title: "La Ruletita 🎯 Ruleta Online Gratis | Sorteos y Decisiones",
   alternateNames: ["Ruleta Online", "Ruleta Aleatoria", "Ruleta de Sorteos"],
   image: {
-    url: "https://picsum.photos/1200/630",
+    url: "https://static.cryptobriefing.com/wp-content/uploads/2024/12/12180316/fbba9428-ba37-4f0c-a3fd-895340b4644a-400x210.jpg",
     alt: "La Ruleta Aleatoria Online - Toma decisiones al azar",
     width: 1200,
     height: 630,

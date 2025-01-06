@@ -1,0 +1,209 @@
+---
+import WinnerDisplay from './WinnerDisplay.astro';
+import WheelSelector from './WheelSelector.astro';
+---
+<div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
+  <WinnerDisplay />
+  
+  <div class="mb-6">
+    <label class="block text-gray-700 text-sm font-bold mb-2" for="participant">
+      Añadir Participante
+    </label>
+    <div class="flex gap-2">
+      <input
+        type="text"
+        id="participant"
+        class="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        placeholder="Nombre del participante"
+      />
+      <button
+        id="addParticipant"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      >
+        Añadir
+      </button>
+    </div>
+  </div>
+
+  <div class="mb-6">
+    <h3 class="text-gray-700 text-sm font-bold mb-2">Participantes:</h3>
+    <ul id="participantsList" class="list-disc pl-5 text-gray-600"></ul>
+  </div>
+
+  <div class="relative mb-6">
+    <div id="wheel" class="w-64 h-64 mx-auto relative">
+      <canvas id="wheelCanvas" width="256" height="256" class="w-full h-full"></canvas>
+      <WheelSelector />
+    </div>
+  </div>
+
+  <button
+    id="spin"
+    disabled
+    class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    ¡Girar Ruleta!
+  </button>
+</div>
+
+<script>
+  import { gsap } from 'gsap';
+  import { calculateWinner, getRandomDegrees, WHEEL_COLORS } from '../utils/wheelCalculations';
+
+  let participants: string[] = JSON.parse(localStorage.getItem('wheelParticipants') || '[]');
+  
+  const canvas = document.getElementById('wheelCanvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d');
+  const addButton = document.getElementById('addParticipant');
+  const spinButton = document.getElementById('spin') as HTMLButtonElement;
+  const participantInput = document.getElementById('participant') as HTMLInputElement;
+  const participantsList = document.getElementById('participantsList');
+  const winnerDisplay = document.getElementById('winnerDisplay');
+  const winnerName = document.getElementById('winnerName');
+  const spinAgain = document.getElementById('spinAgain');
+
+  function drawWheel() {
+    if (!ctx) return;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = canvas.width / 2 - 10;
+
+    if (participants.length === 0) {
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fill();
+      ctx.stroke();
+      return;
+    }
+
+    const sliceAngle = (Math.PI * 2) / participants.length;
+
+    participants.forEach((participant, index) => {
+      const startAngle = index * sliceAngle;
+      const endAngle = startAngle + sliceAngle;
+
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.closePath();
+
+      ctx.fillStyle = WHEEL_COLORS[index % WHEEL_COLORS.length];
+      ctx.fill();
+      ctx.stroke();
+
+      // Add name
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(startAngle + sliceAngle / 2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#000';
+      ctx.font = '14px Arial';
+      ctx.fillText(participant, radius - 10, 5);
+      ctx.restore();
+    });
+  }
+
+  function updateParticipantsList() {
+    if (!participantsList) return;
+    participantsList.innerHTML = participants
+      .map((name, index) => `
+        <li class="mb-2 flex justify-between items-center bg-gray-50 py-2 px-3 rounded-lg">
+          <span>${name}</span>
+          <button 
+            class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-100 text-red-500 hover:text-red-700 transition-colors duration-200" 
+            data-index="${index}"
+            title="Eliminar participante"
+          >
+            ×
+          </button>
+        </li>
+      `)
+      .join('');
+    
+    if (spinButton) {
+      spinButton.disabled = participants.length < 2;
+    }
+
+    // Add event listeners for delete buttons
+    const deleteButtons = participantsList.querySelectorAll('button');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const index = parseInt(button.dataset.index || '0');
+        participants.splice(index, 1);
+        drawWheel();
+        updateParticipantsList();
+        hideWinner();
+        saveParticipants();
+      });
+    });
+  }
+
+  function showWinner(winner: string) {
+    if (winnerDisplay && winnerName) {
+      winnerName.textContent = winner;
+      winnerDisplay.classList.remove('hidden');
+    }
+  }
+
+  function hideWinner() {
+    if (winnerDisplay) {
+      winnerDisplay.classList.add('hidden');
+    }
+  }
+
+  function spinWheel() {
+    if (!spinButton) return;
+    spinButton.disabled = true;
+    hideWinner();
+    
+    // Reset rotation first
+    gsap.set('#wheelCanvas', { rotation: 0 });
+    
+    const minSpins = 8;
+    const randomSpins = minSpins + Math.floor(Math.random() * 4);
+    const randomDegrees = getRandomDegrees();
+    const totalDegrees = (randomSpins * 360) + randomDegrees;
+    
+    gsap.to('#wheelCanvas', {
+      rotation: totalDegrees,
+      duration: 8,
+      ease: "power4.out",
+      onComplete: () => {
+        const winner = calculateWinner(randomDegrees, participants);
+        showWinner(winner);
+        if (spinButton) spinButton.disabled = false;
+      }
+    });
+  }
+
+  function saveParticipants() {
+    localStorage.setItem('wheelParticipants', JSON.stringify(participants));
+  }
+
+  addButton?.addEventListener('click', () => {
+    const name = participantInput?.value.trim();
+    if (name && !participants.includes(name)) {
+      participants.push(name);
+      if (participantInput) participantInput.value = '';
+      drawWheel();
+      updateParticipantsList();
+      hideWinner();
+      saveParticipants();
+    }
+  });
+
+  spinButton?.addEventListener('click', spinWheel);
+  spinAgain?.addEventListener('click', spinWheel);
+  
+  participantInput?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      addButton?.click();
+    }
+  });
+
+  drawWheel();
+  updateParticipantsList();
+</script>

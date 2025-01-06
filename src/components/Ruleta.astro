@@ -27,12 +27,12 @@ import WheelSelector from './WheelSelector.astro';
 
   <div class="mb-6">
     <h3 class="text-gray-700 text-sm font-bold mb-2">Participantes:</h3>
-    <ul id="participantsList" class="list-disc pl-5 text-gray-600"></ul>
+    <ul id="participantsList" class="list-disc text-gray-600"></ul>
   </div>
 
   <div class="relative mb-6">
-    <div id="wheel" class="w-64 h-64 mx-auto relative">
-      <canvas id="wheelCanvas" width="256" height="256" class="w-full h-full"></canvas>
+    <div id="wheel" class="size-72 mx-auto relative">
+      <canvas id="wheelCanvas" width="300" height="300" class="w-full h-full"></canvas>
       <WheelSelector />
     </div>
   </div>

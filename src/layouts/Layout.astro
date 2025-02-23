@@ -2,7 +2,6 @@
 import { SEO, type TwitterCardType } from "astro-seo"
 
 import { seoConfig } from "../../src/utils/seoConfig"
-import Posthog from "../components/posthog.astro"
 
 export interface Props {
 	title: string
@@ -54,7 +53,6 @@ const {
 
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		
 		<!-- Additional SEO tags -->
 		<meta name="keywords" content="ruleta online, ruleta aleatoria, sorteo online, tomar decisiones, ruleta gratis, random wheel, ruleta de la suerte, sorteos aleatorios" />
 		<meta name="author" content="La Ruletita" />
@@ -180,7 +178,9 @@ const {
 		<main class="flex flex-1 flex-col h-[100%] w-full">
 			<slot />
 		</main>
-
+		<!-- Cloudflare Web Analytics -->
+		<script is:inline src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon={`{"token": "${import.meta.env.CLOUDFLARE_WEB_ANALYTICS_TOKEN}"}`}></script>
+		<!-- End Cloudflare Web Analytics -->
 		<script>
 			// This is a hack to get vite-plugin-pwa to generate a sw.js file.
 			// Do not remove this script tag.
